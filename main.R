@@ -10,6 +10,7 @@ data$FRAME <- factor(data$FRAME)
 data$LOCATION <- factor(data$LOCATION)
 data$GENDER <- factor(data$GENDER)
 
+data <- na.omit(data)
 # Data summary
 summary(data)
 
@@ -64,7 +65,18 @@ for (i in 1:12) {
 # Full model 
 full_model <- glm(GHB ~ CHOL + SGLU + LOCATION + AGE + GENDER + HHT + WHT + FRAME + SBP + DSP + W + H, data = data, family = Gamma(link = "log"))
 summary(full_model)
+full_model
 
 
 ####################################  Model comparison ###############################################################
 
+reduced_models <- glm(GHB ~ CHOL + SGLU + AGE, data = data, family = Gamma(link = "log"))
+summary(reduced_models)
+residuals <- residuals(reduced_models)
+fitted_values <- fitted(reduced_models)
+
+residuals_df <- data.frame(Fitted_Values = fitted_values, Residuals = residuals)
+
+ggplot(residuals_df, aes(x = Fitted_Values, y = Residuals)) +
+  geom_point() +
+  labs(x = "Fitted values", y = "Residuals", title = "Residuals vs. Fitted Values")
