@@ -11,6 +11,12 @@ data$LOCATION <- factor(data$LOCATION)
 data$GENDER <- factor(data$GENDER)
 
 data <- na.omit(data)
+
+
+data$BMI <- data$W / ((data$H/100)^2)
+# Calculate HIP_WAIST_RATIO
+data$HIP_WAIST_RATIO <- data$H / data$W
+
 # Data summary
 summary(data)
 
@@ -63,20 +69,49 @@ for (i in 1:12) {
 
 
 # Full model 
-full_model <- glm(GHB ~ CHOL + SGLU + LOCATION + AGE + GENDER + HHT + WHT + FRAME + SBP + DSP + W + H, data = data, family = Gamma(link = "log"))
-summary(full_model)
+full_model <- glm(GHB ~ CHOL + SGLU + LOCATION + AGE + GENDER + HHT + WHT + FRAME + SBP + DSP + W + H
+   #               + BMI +H
+                  , 
+                  data = data, family = Gamma(link = "log"))
+step(full_model)
 full_model
 
 
 ####################################  Model comparison ###############################################################
 
-reduced_models <- glm(GHB ~ CHOL + SGLU + AGE, data = data, family = Gamma(link = "log"))
+reduced_models <- glm(GHB ~ CHOL + SGLU + AGE + W, data = data, family = Gamma(link = "log"))
 summary(reduced_models)
 residuals <- residuals(reduced_models)
 fitted_values <- fitted(reduced_models)
 
-residuals_df <- data.frame(Fitted_Values = fitted_values, Residuals = residuals)
+plot(reduced_models, which = 1)  # Residuals vs. Fitted values
+plot(reduced_models, which = 2)  # Normal Q-Q plot of residuals
+plot(reduced_models, which = 3)  # Scale-Location plot
+plot(reduced_models, which = 5)  # Cook's distance plot
 
-ggplot(residuals_df, aes(x = Fitted_Values, y = Residuals)) +
-  geom_point() +
-  labs(x = "Fitted values", y = "Residuals", title = "Residuals vs. Fitted Values")
+
+
+summary(reduced_models)
+exp(coef(reduced_models))
+confint(reduced_models)
+
+
+anova(reduced_models, test = "Chisq")
+
+
+residuals <- residuals(reduced_models, type = "pearson") / sqrt(reduced_models$deviance / reduced_models$df.residual)
+
+# Calculate the absolute values of the standardized residuals
+abs_residuals <- abs(residuals)
+
+# Set a threshold for identifying outliers (e.g., 2 or 3 standard deviations)
+threshold <- 2
+
+# Identify the outliers based on the threshold
+outliers <- which(abs_residuals > threshold)
+
+
+rows_to_remove <- outliers  # Specify the row numbers you want to remove
+
+# Create a new dataframe excluding the specified rows
+data <- data[-rows_to_remove, ]
