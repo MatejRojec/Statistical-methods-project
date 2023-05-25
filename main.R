@@ -83,6 +83,8 @@ reduced_models <- glm(GHB ~ CHOL + SGLU + AGE + W, data = data, family = Gamma(l
 summary(reduced_models)
 residuals <- residuals(reduced_models)
 fitted_values <- fitted(reduced_models)
+conf_intervals <- confint(reduced_models)
+
 
 plot(reduced_models, which = 1)  # Residuals vs. Fitted values
 plot(reduced_models, which = 2)  # Normal Q-Q plot of residuals
@@ -115,3 +117,23 @@ rows_to_remove <- outliers  # Specify the row numbers you want to remove
 
 # Create a new dataframe excluding the specified rows
 data <- data[-rows_to_remove, ]
+
+
+# Set a threshold for identifying influential observations (e.g., 1 or any other value)
+threshold <- 0.1
+
+# Calculate Cook's distance values
+cooksd <- cooks.distance(reduced_models)
+
+# Identify influential observations based on the threshold
+influential_observations <- which(cooksd > threshold)
+
+# Extract the influential rows
+influential_rows <- data[influential_observations, ]
+
+# Print the influential rows
+print(influential_rows)
+
+
+
+

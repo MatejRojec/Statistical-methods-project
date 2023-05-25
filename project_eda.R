@@ -179,8 +179,7 @@ full_model
 ####################################  Model comparison ###############################################################
 
 reduced_models <- glm(GHB ~ CHOL + SGLU + AGE + W, family = Gamma(link = "log"), data = data)
-dispersion <- gamma.shape(reduced_models)
-summary(reduced_models)
+summary(reduced_models, direction = "AIC")
 residuals <- residuals(reduced_models)
 fitted_values <- fitted(reduced_models)
 conf_intervals <- confint(reduced_models)
@@ -239,12 +238,8 @@ print(influential_rows)
 ## final dist.
 
 # Generate random numbers from gamma distribution
-n <- 100000
-alpha <- exp(0.05529806)
-beta <- 1
-gamma_values <- rgamma(n, alpha, beta)
 
-# Create a data frame for gamma distribution
+gamma_values <- reduced_models$fitted.values
 df_gamma <- data.frame(x = gamma_values)
 
 # Create a data frame for data$GHB
