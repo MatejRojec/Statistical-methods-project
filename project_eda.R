@@ -247,7 +247,8 @@ df_data <- data.frame(x = data$GHB)
 
 # Plot histogram with data$GHB overlay
 ggplot() +
-  geom_density(data = df_gamma, aes(x = x, y = stat(density)), fill = "lightblue", alpha = 0.7) +
-  geom_histogram(data = df_data, aes(x = x, y = stat(density)), fill = "lightgreen", alpha = 0.7, binwidth = 0.5) +
-  labs(title = "Density Plot with Histogram Overlay", x = "GHB", y = "Relative frequency") +
-  scale_fill_manual(values = c("Gamma Distribution" = "lightblue", "Data" = "lightgreen"), guide = guide_legend(title = "Legend"))
+  geom_density(data = df_gamma, aes(x = x, y = stat(density), fill = "Fitted model distribution"), alpha = 0.7) +
+  geom_histogram(data = df_data, aes(x = x, y = stat(density), fill = "Data"), alpha = 0.7, binwidth = 0.5) +
+  labs(title = "Fitted model distribution vs actual data", x = "GHB", y = "Relative frequency") +
+  scale_fill_manual(values = c("Fitted model distribution" = "lightblue", "Data" = "lightgreen"), guide = guide_legend(title = "Legend"))
+
