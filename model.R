@@ -20,7 +20,7 @@ data$HIP_WAIST_RATIO <- data$H / data$W
 ####################################  Model selection and model fitting  ###############################################################
 
 # Full model 
-full_model <- glm(GHB ~ CHOL + SGLU + LOCATION + AGE + GENDER + HHT + WHT + FRAME + SBP + DSP + W + H + BMI +H, 
+full_model <- glm(GHB ~ CHOL + SGLU + LOCATION + AGE + GENDER + HHT + WHT + FRAME + SBP + DSP + W + H + BMI + HIP_WAIST_RATIO, 
                   data = data, family = Gamma(link = "log"))
 summary(full_model)
 full_model$aic
